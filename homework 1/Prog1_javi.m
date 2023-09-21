@@ -9,7 +9,7 @@
 % la potencia activa y la potencia aparente que consume la carga no lineal,
 % así como su factor de potencia.
 %
-clear all
+clear
 close all
 clc
 f=50;
@@ -64,7 +64,7 @@ PHIInrad=angle(fft_parc_0);
     corr_Ldesc=y_Ldesc(:,3);        % Intensidad.
 
 %% 1)Plotting waves
-subplot(1,2,1);                     %divide the window to accomodate various plots, select the first division
+subplot(4,2,1);                     %divide the window to accomodate various plots, select the first division
 yyaxis left                         %activate the right axis of the first plot
 plot(t(1:size(t)),u(1:size(t)));    %plot data, volts and time
 ylabel('[Volts]');                  %name the plot's left vertical axis
@@ -74,7 +74,7 @@ plot(t(1:size(t)),corr(1:size(t))); %plot data, current and time
 xlabel('[seconds]');                %name the plot's horizontal axis
 ylabel('[Amperes]');                %name the plot's right vertical axis
 
-subplot(1,2,2);                                 %the same all over again bu with different plot data
+subplot(4,2,2);                                 %the same all over again bu with different plot data
 yyaxis left                                    
 plot(t_Ldesc(1:size(t)),u_Ldesc(1:size(t)));    
 ylabel('[Volts]');                              
@@ -102,16 +102,64 @@ ylabel('[Amperes]');
     % y hasta la posicion 40 que corresponde al armonico 39.
     %
     k_Ldesc=(1+1):1:40;
-    fft_parc_0_Ldesc=fft_compl_0(k_Ldesc);
+    fft_parc_0_Ldesc=fft_compl_0_Ldesc(k_Ldesc);
     %
     % Determinacion del valor eficaz y la fase.
     %
-    Uef_Ldesc=(1/sqrt(2))*(2/N)*abs(fft_parc_0_Ldesc);
+    Uef_Ldesc=(1/sqrt(2))*(2/N_Ldesc)*abs(fft_parc_0_Ldesc);
     PHIUrad_Ldesc=angle(fft_parc_0_Ldesc);
     %
     % INTENSIDAD
     %
     fft_compl_0_Ldesc=fft(corr_Ldesc);
-    fft_parc_0_Ldesc=fft_compl_0(k_Ldesc);
-    Ief=(1/sqrt(2))*(2/N)*abs(fft_parc_0_Ldesc);
+    fft_parc_0_Ldesc=fft_compl_0_Ldesc(k_Ldesc);
+    Ief_Ldesc=(1/sqrt(2))*(2/N_Ldesc)*abs(fft_parc_0_Ldesc);
     PHIInrad_Ldesc=angle(fft_parc_0_Ldesc);
+
+%calculating individual Harmonic distortions HDx:
+U_HDx=100*Uef./Uef(1);                    %entire VRMS array divided by the fundamental harmonic and then times 100.
+Curr_HDx=100*Ief./Ief(1);                 %entire IRMS array divided by the fundamental harmonic and then times 100.
+U_HDx_Ldesc=100*Uef_Ldesc./Uef_Ldesc(1);  %the same for Ldesc 
+Curr_HDx_Ldesc=100*Ief./Ief(1);
+
+%Calculating Total Harmonic distortions THD:
+Uef_squared=Uef(2:end).*Uef(2:end);% square the Uef array, but eliminate the fundamental harmonic to calculate THD
+Ief_squared=Ief(2:end).*Ief(2:end);% square the Ief array, but eliminate the fundamental harmonic to calculate THD
+
+U_THD=100*sqrt(sum(Uef_squared));
+I_THD=100*sqrt(sum(Ief_squared));
+
+
+%plot results
+subplot(4,2,3);                                 %divide the window to accomodate various plots, select the third division
+bar(U_HDx(1:end));                              %bar plot
+title('Fmonoff Voltage Harmonic Distortions');
+xlabel('[Harmonic number]'); 
+ylabel('[%]');
+xticks(1:5);
+grid on;
+
+subplot(4,2,4);                                 %divide the window to accomodate various plots, select the forth division
+bar(U_HDx_Ldesc(1:end));                        %bar plot
+title('Ldesc Voltage Harmonic Distortions');
+xlabel('[Harmonic number]'); 
+ylabel('[%]');
+xticks(1:5);
+grid on;
+
+subplot(4,2,5);                                 %divide the window to accomodate various plots, select the fifth division
+bar(Curr_HDx(1:end));                           %bar plot
+title('Fmonoff Current Harmonic Distortions');
+xlabel('[Harmonic number]'); 
+ylabel('[%]');
+xticks(1:40);
+grid on;
+
+subplot(4,2,6);                                 %divide the window to accomodate various plots, select the sixth division
+bar(Curr_HDx_Ldesc(1:end));                     %bar plot
+title('Ldesc Current Harmonic Distortions');
+xlabel('[Harmonic number]'); 
+ylabel('[%]');
+xticks(1:40);
+grid on;
+
