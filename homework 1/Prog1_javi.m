@@ -123,11 +123,15 @@ U_HDx_Ldesc=100*Uef_Ldesc./Uef_Ldesc(1);  %the same for Ldesc
 Curr_HDx_Ldesc=100*Ief./Ief(1);
 
 %Calculating Total Harmonic distortions THD:
-Uef_squared=Uef(2:end).*Uef(2:end);% square the Uef array, but eliminate the fundamental harmonic to calculate THD
-Ief_squared=Ief(2:end).*Ief(2:end);% square the Ief array, but eliminate the fundamental harmonic to calculate THD
+Uef_squared=Uef(1:end).*Uef(1:end);                     % square the Uef array
+Ief_squared=Ief(1:end).*Ief(1:end);                     % the same with Ief
+THD_Uef=100*sqrt(sqrt(sum(Uef_squared(2:end))))/Uef(1); %calculate THD, mind the fundamental component
+THD_Ief=100*sqrt(sqrt(sum(Ief_squared(2:end))))/Ief(1); % the same with Ief
 
-U_THD=100*sqrt(sum(Uef_squared));
-I_THD=100*sqrt(sum(Ief_squared));
+Uef_squared_Ldesc=Uef_Ldesc(1:end).*Uef_Ldesc(1:end);                     %the same for Ldesc 
+Ief_squared_Ldesc=Ief_Ldesc(1:end).*Ief_Ldesc(1:end);
+THD_Uef_Ldesc=100*sqrt(sqrt(sum(Uef_squared_Ldesc(2:end))))/Uef_Ldesc(1);
+THD_Ief_Ldesc=100*sqrt(sqrt(sum(Ief_squared_Ldesc(2:end))))/Ief_Ldesc(1);
 
 
 %plot results
@@ -162,4 +166,3 @@ xlabel('[Harmonic number]');
 ylabel('[%]');
 xticks(1:40);
 grid on;
-

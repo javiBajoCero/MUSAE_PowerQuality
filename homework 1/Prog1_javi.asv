@@ -9,7 +9,7 @@
 % la potencia activa y la potencia aparente que consume la carga no lineal,
 % así como su factor de potencia.
 %
-clear all
+clear
 close all
 clc
 f=50;
@@ -116,13 +116,19 @@ ylabel('[Amperes]');
     Ief_Ldesc=(1/sqrt(2))*(2/N_Ldesc)*abs(fft_parc_0_Ldesc);
     PHIInrad_Ldesc=angle(fft_parc_0_Ldesc);
 
-%calculating individual Harmonic distortions HDx
+%calculating individual Harmonic distortions HDx:
 U_HDx=100*Uef./Uef(1);                    %entire VRMS array divided by the fundamental harmonic and then times 100.
 Curr_HDx=100*Ief./Ief(1);                 %entire IRMS array divided by the fundamental harmonic and then times 100.
 U_HDx_Ldesc=100*Uef_Ldesc./Uef_Ldesc(1);  %the same for Ldesc 
 Curr_HDx_Ldesc=100*Ief./Ief(1);
 
-%Calculating Total Harmonic distortions THD
+%Calculating Total Harmonic distortions THD:
+Uef_squared=Uef(1:end).*Uef(1:end);% square the Uef array
+Ief_squared=Ief(1:end).*Ief(1:end);% the same with Ief
+THD
+Uef_squared_summed=;
+Uef_squared_summed_sqrtd=sqrt(Uef_squared_summed);
+Uef_squared_summed_sqrtd_pondered=100*sqrt(Uef_squared_summed_sqrtd)/Uef(1);
 
 
 %plot results
@@ -144,7 +150,7 @@ grid on;
 
 subplot(4,2,5);                                 %divide the window to accomodate various plots, select the fifth division
 bar(Curr_HDx(1:end));                           %bar plot
-title('Fmonoff Current Voltaje Harmonic Distortions');
+title('Fmonoff Current Harmonic Distortions');
 xlabel('[Harmonic number]'); 
 ylabel('[%]');
 xticks(1:40);
@@ -158,5 +164,11 @@ ylabel('[%]');
 xticks(1:40);
 grid on;
 
-text(2,1,'\spadesuit')
 
+subplot(4,2,7);                                 %divide the window to accomodate various plots, select the sixth division
+bar(Uef_squared);                     %bar plot
+title('Ldesc Current Harmonic Distortions');
+xlabel('[Harmonic number]'); 
+ylabel('[%]');
+xticks(1:40);
+grid on;
