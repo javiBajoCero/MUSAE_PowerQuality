@@ -54,6 +54,9 @@ PHIInrad=angle(fft_parc_0);
 
 
 %% ALL CODE HIGHER THAN THIS MARK REMAINS UNCHANGED
+UefDC=(1/N)*abs(fft_compl_0(1)); %% for some reason the DC component was not included in Uef https://es.mathworks.com/help/sps/ref/rmsmeasurement.html
+IefDC=(1/N)*abs(fft_compl_0(1));
+
     %%the same way we loaded Fmonof.txt now we load Ldesc.txt, code copypasted
     %%from above with different variable names.
     y_Ldesc=load('Ldesc.txt');      % load txt file into a matlab variable
@@ -133,15 +136,7 @@ Ief_squared_Ldesc=Ief_Ldesc.*Ief_Ldesc;
 THD_Uef_Ldesc=100*(sqrt(sum(Uef_squared_Ldesc(2:end))))/Uef_Ldesc(1);
 THD_Ief_Ldesc=100*(sqrt(sum(Ief_squared_Ldesc(2:end))))/Ief_Ldesc(1);
 
-%%RMS values: all signals have a Dc component =0 so we can work with previous arrays.
-Urms=sqrt(sum(Uef_squared));
-Irms=sqrt(sum(Ief_squared));
-
-Urms_Ldesc=sqrt(sum(Uef_squared_Ldesc));% the same for Ldesc
-Irms_Ldesc=sqrt(sum(Ief_squared_Ldesc));
-
-%%active power P
-
+%%Urms needs te Dc component
 
 %plot results
 subplot(4,2,3);                                 %divide the window to accomodate various plots, select the third division
