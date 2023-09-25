@@ -54,9 +54,6 @@ PHIInrad=angle(fft_parc_0);
 
 
 %% ALL CODE HIGHER THAN THIS MARK REMAINS UNCHANGED
-UefDC=(1/N)*abs(fft_compl_0(1)); %% for some reason the DC component was not included in Uef https://es.mathworks.com/help/sps/ref/rmsmeasurement.html
-IefDC=(1/N)*abs(fft_compl_0(1));
-
     %%the same way we loaded Fmonof.txt now we load Ldesc.txt, code copypasted
     %%from above with different variable names.
     y_Ldesc=load('Ldesc.txt');      % load txt file into a matlab variable
@@ -123,7 +120,7 @@ U_HDx=100*Uef./Uef(1);                    %entire VRMS array divided by the fund
 U_HDx_Ldesc=100*Uef_Ldesc./Uef_Ldesc(1);  %the same for Ldesc 
 
 Curr_HDx=100*Ief./Ief(1);                 %entire IRMS array divided by the fundamental harmonic and then times 100.
-Curr_HDx_Ldesc=100*Ief./Ief(1);           %the same for Ldesc 
+Curr_HDx_Ldesc=100*Ief_Ldesc./Ief_Ldesc(1);           %the same for Ldesc 
 
 %Calculating Total Harmonic distortions THD:
 Uef_squared=Uef.*Uef;                                   % square the Uef array
@@ -136,7 +133,22 @@ Ief_squared_Ldesc=Ief_Ldesc.*Ief_Ldesc;
 THD_Uef_Ldesc=100*(sqrt(sum(Uef_squared_Ldesc(2:end))))/Uef_Ldesc(1);
 THD_Ief_Ldesc=100*(sqrt(sum(Ief_squared_Ldesc(2:end))))/Ief_Ldesc(1);
 
-%%Urms needs te Dc component
+%%RMS values: all signals have a Dc component =0 so we can work with previous arrays.
+Urms=sqrt(sum(Uef_squared));
+Irms=sqrt(sum(Ief_squared));
+
+Urms_Ldesc=sqrt(sum(Uef_squared_Ldesc));% the same for Ldesc
+Irms_Ldesc=sqrt(sum(Ief_squared_Ldesc));
+
+%%apparent power S = Urms+Irms [va]
+S=Urms*Irms;
+S_Ldesc=Urms_Ldesc*Irms_Ldesc;
+
+
+%%active power P [w]
+P=sum((Uef.*Ief).*cos(PHIInrad));
+P=sum((Uef.*Ief).*cos(PHIInrad));
+
 
 %plot results
 subplot(4,2,3);                                 %divide the window to accomodate various plots, select the third division

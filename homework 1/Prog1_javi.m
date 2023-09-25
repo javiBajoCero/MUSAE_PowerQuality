@@ -140,8 +140,17 @@ Irms=sqrt(sum(Ief_squared));
 Urms_Ldesc=sqrt(sum(Uef_squared_Ldesc));% the same for Ldesc
 Irms_Ldesc=sqrt(sum(Ief_squared_Ldesc));
 
-%%active power P
+%%active power P [w]
+P=sum((Uef.*Ief).*cos(PHIInrad));
+P_Ldesc=sum((Uef_Ldesc.*Ief_Ldesc).*cos(PHIInrad_Ldesc));
 
+%%apparent power S = Urms+Irms [va]
+S=Urms*Irms;
+S_Ldesc=Urms_Ldesc*Irms_Ldesc;
+
+%power factor
+PF=P/S;
+PF_Ldesc=P_Ldesc/S_Ldesc;
 
 %plot results
 subplot(4,2,3);                                 %divide the window to accomodate various plots, select the third division
