@@ -120,7 +120,7 @@ U_HDx=100*Uef./Uef(1);                    %entire VRMS array divided by the fund
 U_HDx_Ldesc=100*Uef_Ldesc./Uef_Ldesc(1);  %the same for Ldesc 
 
 Curr_HDx=100*Ief./Ief(1);                 %entire IRMS array divided by the fundamental harmonic and then times 100.
-Curr_HDx_Ldesc=100*Ief./Ief(1);           %the same for Ldesc 
+Curr_HDx_Ldesc=100*Ief_Ldesc./Ief_Ldesc(1);           %the same for Ldesc 
 
 %Calculating Total Harmonic distortions THD:
 Uef_squared=Uef.*Uef;                                   % square the Uef array
