@@ -43,12 +43,53 @@ PHIInrad=angle(fft_parc_0);
 
 
 %% code above this line was not modified
+% as we are facing a Non Linear Load, we are using the superposittion
+% method to analyse the exercise.
 
-%generating Ug *volts at the generator, pure cosine, supposing U is Vrms
+%generating Ug *volts at the generator, pure cosine, supposing U data is Vrms
 Ug=U*sqrt(2)*cos(t*f*2*pi);
+
+
 
 %determine Ul (voltage at the non lineal load), compare it to U (voltage at the
 %generator) plotting.
+
+%first determining Zeq for each harmonic (39)
+Zeq = zeros(39,2);
+for k = 1:1:39
+    Zeq(k,1)=R;
+    Zeq(k,2)=k*XL;
+end
+
+Zeq_modulus=sqrt(Zeq(:,1).^2 +Zeq(:,2).^2);
+
+%Ug is pure sinusoidal so its U is a value followoed by zeros
+Ug_harmonics = zeros(39,1);
+Ug_harmonics(1) = U;
+
+%now to calculate Ul we apply this ecuation
+Ul=Ief.*Zeq_modulus - Ug_harmonics;
+Ul=abs(Ul);%%remove sign from fundamental
+
+
+
+%Calculate THD and individual HDux for Ul(voltage at the non lineal load)
+Ul_Hd=100*Ul./Ul(1);                            %entire HD array divided by the fundamental harmonic and then times 100. (%)
+Ul_THd=sqrt(sum(Ul_Hd(2:end).*Ul_Hd(2:end)));   %calculate THD by square addition of all individual Hd except the first harmonic(100)
+fprintf('Ul THD Fmonof= %f [%%].\n',Ul_THd);
+
+
+
+%reconstructing Ul back from its harmonic values
+Ul_reconstructed=0;
+for k = 1:1:39
+    Ul_reconstructed=Ul_reconstructed+Ul(k)*sqrt(2)*cos(t*f*2*pi*k + phase);
+end
+
+
+%plot current i going trought the non lineal load.
+
+
 subplot(3,1,1);                     %divide the window to accomodate various plots, select the first division
 yyaxis right                        %activate the right axis of the first plot
 plot(t(1:size(t)),corr(1:size(t))); %plot data, volts and time
@@ -58,8 +99,5 @@ yyaxis left;                        %activate the left axis of the first plot
 plot(t(1:size(t)),Ug(1:size(t)));   %plot data, current and time
 xlabel('[seconds]');                %name the plot's horizontal axis
 ylabel('[Volts]');                  %name the plot's right vertical axis
-
-
-%Calculate THD and individual HDix for Ul(voltage at the non lineal load)
-
-%plot current i going trought the non lineal load.
+hold on;
+plot(t(1:size(t)),Ul_reconstructed(1:size(t)));   %plot data, current and time
