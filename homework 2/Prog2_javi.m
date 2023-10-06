@@ -83,14 +83,13 @@ fprintf('Ul THD Fmonof= %f [%%].\n',Ul_THd);
 %reconstructing Ul back from its harmonic values
 Ul_reconstructed=0;
 for k = 1:1:39
-    Ul_reconstructed=Ul_reconstructed+Ul(k)*sqrt(2)*cos(t*f*2*pi*k + phase);
+    Ul_reconstructed=Ul_reconstructed+Ul(k)*sqrt(2)*cos(t*f*2*pi*k);
 end
 
 
 %plot current i going trought the non lineal load.
 
 
-subplot(3,1,1);                     %divide the window to accomodate various plots, select the first division
 yyaxis right                        %activate the right axis of the first plot
 plot(t(1:size(t)),corr(1:size(t))); %plot data, volts and time
 ylabel('[Current]');                %name the plot's left vertical axis
