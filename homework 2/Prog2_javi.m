@@ -1,92 +1,84 @@
 function Prog2
-%
-% Dado un generador de tensión sinusoidal (230 V a f = 50 Hz) que alimenta a través
-% de una impedancia (Z = R + j·XL = 0.1 + j·1.5 Ω a f = 50 Hz) a una carga no lineal
-% cuya corriente consumida es dato (archivo Fmonof.txt) y cuyo espectro armónico
-% de dicha corriente también es dato, determinar la tensión uL en bornes de la carga
-% y compararla con la tensión u del generador dibujando ambas tensiones. Además,
-% calcular la distorsión armónica total y las individuales de la tensión uL. Dibujar
-% también la corriente i consumida por la carga no lineal.
-%
+
+% Given a sinusoidal voltage generator (230 V at f = 50 Hz) feeding through an impedance (Z = R + j·XL = 0.1 + j·1.5 Ω at f = 50 Hz) to a nonlinear load whose consumed current 
+% is provided (file Fmonof.txt), and whose harmonic spectrum of said current is also given, determine the voltage uL across the load terminals and compare it with the generator 
+% voltage u by plotting both voltages. Additionally, calculate the total harmonic distortion and individual harmonic distortions of voltage uL. 
+% Also, plot the current i consumed by the nonlinear load.
+
 clear all
 close all
 clc
-f=50;
-w=2*pi*f;
-%
-% Tension del generador (sinusoidal pura a f = 50 Hz).
-%
-U=230*exp(1j*0);
-%
-% Impedancia de la instalacion (a f = 50 Hz).
-%
-R=0.1;
-XL=1.5; 
-%
-% Lectura de la corriente consumida por la carga no lineal.
-%
-y=load('Fmonof.txt');
+f = 50;
+w = 2 * pi * f;
 
-t=y(:,1); % Tiempo (de 0 a 20 ms).
-N=length(t); % Dimension del vector de datos.
-corr=y(:,3); % Corriente.
+% Generator voltage (pure sinusoidal at f = 50 Hz).
+U = 230 * exp(1j * 0);
 
-%
-% Desarrollo de Fourier de la corriente (de la onda fundamental hasta el
-% armonico 39).
-%
-k=(1+1):1:40;
-fft_compl_0=fft(corr);
-fft_parc_0=fft_compl_0(k);
-Ief=(1/sqrt(2))*(2/N)*abs(fft_parc_0);
-PHIInrad=angle(fft_parc_0);
+% Installation impedance (at f = 50 Hz).
+R = 0.1;
+XL = 1.5; 
 
+% Reading the current consumed by the nonlinear load.
+y = load('Fmonof.txt');
 
-%% code above this line was not modified
-% as we are facing a Non Linear Load, we are using the superposittion
-% method to analyse the exercise.
+% Time (from 0 to 20 ms).
+t = y(:, 1); 
+% Data vector size.
+N = length(t); 
+% Current.
+corr = y(:, 3); 
 
-%generating Ug *volts at the generator, pure cosine, supposing U data is Vrms
-Ug=U*sqrt(2)*cos(t*f*2*pi);  %only fundamental harmonic
+% Fourier series expansion of the current (from the fundamental wave to the 39th harmonic).
+k = (1 + 1):1:40;
+fft_compl_0 = fft(corr);
+fft_parc_0 = fft_compl_0(k);
+Ief = (1/sqrt(2)) * (2/N) * abs(fft_parc_0);
+PHIInrad = angle(fft_parc_0);
 
-Ug_harmonicos=zeros(1,39);   %%pure cosine , the rest of harmonics are 0
-Ug_harmonicos(1)=U;             
+% Constructing a Load Voltage (uL) by converting phasors into time domain. 
+uL_final = zeros(size(t));
+uL_mag = zeros(1, 39);
 
-%determine Ul (voltage at the non lineal load), compare it to U (voltage at the
-%generator) plotting.
+for i=1:39
+Z(i)= R + 1j*XL*i;
+I(i)=Ief(i)*exp(1j * PHIInrad(i));
+    if i==1
+    uL(i) = U - (I(i)*(Z(i))); % for fundamental component 
+    else 
+    uL(i) = -(I(i)*(Z(i)));    % for harmonic components 
+    end
+uL_mag(i)= abs(uL(i)); % magnitude 
+uL_angle(i) = angle(uL(i)); % angle 
+uL_final=uL_final+(sqrt(2)*uL_mag(i)*cos((2*pi*f*i*t)+uL_angle(i))); % reconstructed waveform  
+end 
 
-UL=zeros(1,39);
-for k=1:39          %each harmonic including the 1st (fundamental)
-    Zeqk=R+1j*k*XL;
-    UL(k)= Ug_harmonicos(k) - Zeqk*Ief(k)*exp(1j*PHIInrad(k));
-end
+% Determining the root mean square value of Load Voltage to calculate distortions
+uL_eff = (1/sqrt(2))*(2/N)*uL_mag;
 
-Ul=abs(UL);
-PHIUlnrad=angle(UL);
+% Constructing time domain waveform of Generator Voltage (u)
+U_TIME= sqrt(2)*abs(U)*cos(2*pi*f*t);
 
-%Calculate THD and individual HDux for Ul(voltage at the non lineal load)
-Ul_Hd=100*Ul./Ul(1);                            %entire HD array divided by the fundamental harmonic and then times 100. (%)
-Ul_THd=sqrt(sum(Ul_Hd(2:end).*Ul_Hd(2:end)));   %calculate THD by square addition of all individual Hd except the first harmonic(100)
-fprintf('Ul THD Fmonof= %f [%%].\n',Ul_THd);
-
-
-
-%reconstructing Ul back from its harmonic values
-Ul_reconstructed=0;
-for k = 1:1:39
-    Ul_reconstructed=Ul_reconstructed+Ul(k)*sqrt(2)*cos(t*f*2*pi*k+PHIUlnrad(k)); % <-- Sumar PHIUlnrad(k)
-end
-
-
-%plot current i going trought the non lineal load, along Ug and Ul.
-
-yyaxis right                        %activate the right axis of the first plot
-plot(t(1:size(t)),corr(1:size(t))); %plot data, current and time
-ylabel('[Current]');                %name the plot's left vertical axis
-title('i');                         %name the plot
-yyaxis left;                        %activate the left axis of the first plot
-plot(t(1:size(t)),Ug(1:size(t)));   %plot data, volts in the generator (source) and time
-xlabel('[seconds]');                %name the plot's horizontal axis
-ylabel('[Volts]');                  %name the plot's right vertical axis
+figure(1)
+yyaxis left 
+plot(t,uL_final);
 hold on;
-plot(t(1:size(t)),Ul_reconstructed(1:size(t)));   %plot data, load voltaje and time
+yyaxis left 
+plot(t,U_TIME);
+xlabel('Time (ms)');
+ylabel('Voltage');
+grid on;
+yyaxis right 
+plot(t, corr);
+title('Comparison of Generator Voltage (u) and Load Voltage (uL)');
+legend( 'Load Voltage (uL)', 'Generator Voltage (u)', 'Load Current (i)');
+
+%Total Harmonic Distortion (THD) and Individual Harmonic Distortion (IHD) of Load Voltage(uL)%
+
+THD= 100*(sqrt(sum(uL_eff(2:end).^2)))/uL_eff(1);
+fprintf('THD: %.2f %%\n', THD);
+
+IHD = 100*uL_eff(1:end)/uL_eff(1); 
+%displaying odd harmonics 
+for n= 1:2:39  
+fprintf('IHD(odd harmonics): %.2f %%\n', IHD(n));
+end
