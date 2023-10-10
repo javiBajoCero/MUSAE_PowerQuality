@@ -49,16 +49,19 @@ PHIInrad=angle(fft_parc_0);
 %generating Ug *volts at the generator, pure cosine, supposing U data is Vrms
 Ug=U*sqrt(2)*cos(t*f*2*pi);  %only fundamental harmonic
 
-Ug_harmonicos=zeros(1,39);   %%pure cosine , the rest of harmonics are 0
-Ug_harmonicos(1)=U;             
+
 
 %determine Ul (voltage at the non lineal load), compare it to U (voltage at the
 %generator) plotting.
 
-UL=zeros(1,39);
-for k=1:39          %each harmonic including the 1st (fundamental)
+% %first determining Zeq for the fundamental harmonic
+Zeq1=R+1j*XL;
+%calculate the fundamentalcomponent of Ul
+UL(1)=U - Zeq1*Ief(1)*exp(1j*PHIInrad(1));
+
+for k=1:39  %each harmonic except the 1st (fundamental)
     Zeqk=R+1j*k*XL;
-    UL(k)= Ug_harmonicos(k) - Zeqk*Ief(k)*exp(1j*PHIInrad(k));
+    UL(k)= - Zeqk*Ief(k)*exp(1j*PHIInrad(k));
 end
 
 Ul=abs(UL);

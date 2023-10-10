@@ -47,22 +47,41 @@ PHIInrad=angle(fft_parc_0);
 % method to analyse the exercise.
 
 %generating Ug *volts at the generator, pure cosine, supposing U data is Vrms
-Ug=U*sqrt(2)*cos(t*f*2*pi);  %only fundamental harmonic
+Ug=U*sqrt(2)*cos(t*f*2*pi);
 
-Ug_harmonicos=zeros(1,39);   %%pure cosine , the rest of harmonics are 0
-Ug_harmonicos(1)=U;             
+
 
 %determine Ul (voltage at the non lineal load), compare it to U (voltage at the
 %generator) plotting.
 
-UL=zeros(1,39);
-for k=1:39          %each harmonic including the 1st (fundamental)
+% %first determining Zeq for each harmonic (39)
+% Zeq = zeros(39,2);
+% for k = 1:1:39
+%     Zeq(k,1)=R;
+%     Zeq(k,2)=k*XL;
+% end
+% 
+% Zeq_modulus=sqrt(Zeq(:,1).^2 +Zeq(:,2).^2);
+% 
+% %Ug is pure sinusoidal so its U is a value followoed by zeros
+% Ug_harmonics = zeros(39,1);
+% Ug_harmonics(1) = U;
+% 
+% %now to calculate Ul we apply this ecuation
+% Ul=Ief.*Zeq_modulus - Ug_harmonics;
+% Ul=abs(Ul);%%remove sign from fundamental
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Zeq1=R+1j*XL;
+UL(1)=U - Zeq1*Ief(1)*exp(1j*PHIInrad(1));
+for k=2:39
     Zeqk=R+1j*k*XL;
-    UL(k)= Ug_harmonicos(k) - Zeqk*Ief(k)*exp(1j*PHIInrad(k));
+    UL(k)= - Zeqk*Ief(k)*exp(1j*PHIInrad(k));
 end
 
 Ul=abs(UL);
 PHIUlnrad=angle(UL);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %Calculate THD and individual HDux for Ul(voltage at the non lineal load)
 Ul_Hd=100*Ul./Ul(1);                            %entire HD array divided by the fundamental harmonic and then times 100. (%)
@@ -78,15 +97,16 @@ for k = 1:1:39
 end
 
 
-%plot current i going trought the non lineal load, along Ug and Ul.
+%plot current i going trought the non lineal load.
+
 
 yyaxis right                        %activate the right axis of the first plot
-plot(t(1:size(t)),corr(1:size(t))); %plot data, current and time
+plot(t(1:size(t)),corr(1:size(t))); %plot data, volts and time
 ylabel('[Current]');                %name the plot's left vertical axis
 title('i');                         %name the plot
 yyaxis left;                        %activate the left axis of the first plot
-plot(t(1:size(t)),Ug(1:size(t)));   %plot data, volts in the generator (source) and time
+plot(t(1:size(t)),Ug(1:size(t)));   %plot data, current and time
 xlabel('[seconds]');                %name the plot's horizontal axis
 ylabel('[Volts]');                  %name the plot's right vertical axis
 hold on;
-plot(t(1:size(t)),Ul_reconstructed(1:size(t)));   %plot data, load voltaje and time
+plot(t(1:size(t)),Ul_reconstructed(1:size(t)));   %plot data, current and time
