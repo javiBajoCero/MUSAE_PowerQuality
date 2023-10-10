@@ -31,6 +31,11 @@ Zeq_line= R + 1j*k*XL;                      %a resistance and inductance
 
 Zeq_filter= RF + 1j*k*XLF -1j*XCF./k;       %resistance inductance and capacitance
 
-Zeq= (Zeq_line+Zeq_filter)./(Zeq_line.*Zeq_filter); %both previous Zeq-... in pararell
+Zeq= (Zeq_line.*Zeq_filter)./(Zeq_line+Zeq_filter); %both previous Zeq-... in pararell
 
-plot (k,abs(Zeq))
+Ksr =sqrt(XCF/XLF) %series resonance
+
+plot (k,abs(Zeq));
+title('Zeq for each harmonic');
+ylabel('Z (ohms)');
+xlabel('k (harmonic number)');
