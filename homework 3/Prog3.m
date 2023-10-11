@@ -35,7 +35,7 @@ Zeq= (Zeq_line.*Zeq_filter)./(Zeq_line+Zeq_filter); %both previous Zeq-... in pa
 
 Ksr =sqrt(XCF/XLF); %series resonance
 
-fprintf('Ksr resonance series (relative to fundamental harmonic) : %.2f \n', Ksr);
+fprintf('Ksr3 resonance series (relative to fundamental harmonic) : %.2f \n', Ksr);
 
 hold on;
 plot (k,abs(Zeq));
@@ -48,8 +48,8 @@ h=4.95;
 XLF=XCF/h^2; % Reactancia de la bobina del filtro.
 RF=XLF*h/q; % Resistencia del filtro.
 
-% XL=XLF*0.1; % Reactancia inductiva de la linea.
-% R=XL*0.05; % Resistencia de la linea.
+ XL=XLF*0.1; % Reactancia inductiva de la linea.
+ R=XL*0.05; % Resistencia de la linea.
 
 k=1:0.1:2*h;
 
@@ -60,6 +60,10 @@ Zeq_filter= RF + 1j*k*XLF -1j*XCF./k;       %resistance inductance and capacitan
 
 Zeq_k5= (Zeq_line.*Zeq_filter)./(Zeq_line+Zeq_filter); %both previous Zeq-... in pararell
 
+Ksr =sqrt(XCF/XLF); %series resonance
+
+fprintf('Ksr5 resonance series (relative to fundamental harmonic) : %.2f \n', Ksr);
+
 plot (k,abs(Zeq_k5));
 
 %% now for value of K right below 7
@@ -67,8 +71,8 @@ h=6.95;
 XLF=XCF/h^2; % Reactancia de la bobina del filtro.
 RF=XLF*h/q; % Resistencia del filtro.
 
-% XL=XLF*0.1; % Reactancia inductiva de la linea.
-% R=XL*0.05; % Resistencia de la linea.
+ XL=XLF*0.1; % Reactancia inductiva de la linea.
+ R=XL*0.05; % Resistencia de la linea.
 
 k=1:0.1:2*h;
 
@@ -78,5 +82,9 @@ Zeq_line= R + 1j*k*XL;                      %a resistance and inductance
 Zeq_filter= RF + 1j*k*XLF -1j*XCF./k;       %resistance inductance and capacitance
 
 Zeq_k7= (Zeq_line.*Zeq_filter)./(Zeq_line+Zeq_filter); %both previous Zeq-... in pararell
+
+Ksr =sqrt(XCF/XLF); %series resonance
+
+fprintf('Ksr7 resonance series (relative to fundamental harmonic) : %.2f \n', Ksr);
 
 plot (k,abs(Zeq_k7));
