@@ -30,7 +30,7 @@ c = 3e8; %sp of light
 
 %calc overvoltages due to near strike
 
-h = 1+0.5; %(m)
+h = 10+5; %(m) %esto era 1,5m
 
 %power line location in horizontal plane
 x_loc = 10000;%now we do an specific point
